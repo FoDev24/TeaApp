@@ -8,27 +8,20 @@ import okhttp3.ResponseBody.Companion.toResponseBody
 import retrofit2.Response
 
 
-class FakeApiService : ApiService {
+class FakeApiService(
+    private val areasResponse: suspend () -> Response<AreaResponse> = {
+        Response.success(AreaResponse(emptyList()))
+    },
+    private val competitionsResponse: suspend (Int) -> CompetitionsResponse = {
+        CompetitionsResponse(emptyList())
+    }
+) : ApiService {
+
     override suspend fun getAreas(): Response<AreaResponse> {
-        return Response.success(
-            AreaResponse(
-                areas = listOf(
-                    Area(
-                        id = 1,
-                        name = "API Egypt",
-                        countryCode = "EG",
-                        code = null,
-                        flag = null,
-                        parentAreaId = null,
-                        parentArea = "AF"
-                    )
-                )
-            )
-        )
+        return areasResponse()
     }
 
-
     override suspend fun getCompetitionsByArea(areaId: Int): CompetitionsResponse {
-        return CompetitionsResponse(emptyList())
+        return competitionsResponse(areaId)
     }
 }

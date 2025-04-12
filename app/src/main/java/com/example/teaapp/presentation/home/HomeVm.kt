@@ -1,6 +1,5 @@
 package com.example.teaapp.presentation.home
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.teaapp.domain.repository.FootballRepository
@@ -47,20 +46,16 @@ class HomeVm @Inject constructor(
             if (!_state.value.isOffline) {
                 when (val result = repository.getAreasFromApi()) {
                     is Result.Success -> {
-                        Log.d("VM", "API Success: ${result.data}")
                         _state.value=_state.value.copy(
                                 areas = result.data ?: emptyList(),
                                 isLoading = false,
                                 isOffline = false
                         )
-                        Log.d("VM", "API Success State: ${_state.value.areas}")
 
                     }
 
                     is Result.Error -> {
-                        Log.d("VM", "API Error: ${result.message}")
                         val cached = repository.getCachedAreas()
-                        Log.d("VM", "Fallback cache: $cached")
                         if (cached.isNotEmpty()) {
                             _state.update {
                                 it.copy(
@@ -82,13 +77,10 @@ class HomeVm @Inject constructor(
                     }
 
                     else -> {
-                        Log.d("VM", "Unexpected result")
                     }
                 }
             } else {
-                Log.d("VM", "Offline mode. Trying cache...")
                 val cached = repository.getCachedAreas()
-                Log.d("VM", "Cache: $cached")
                 if (cached.isNotEmpty()) {
                     _state.update {
                         it.copy(
